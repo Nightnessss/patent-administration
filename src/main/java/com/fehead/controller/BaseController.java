@@ -3,14 +3,12 @@ package com.fehead.controller;
 import com.fehead.error.BusinessException;
 import com.fehead.error.EmBusinessError;
 import com.fehead.response.CommonReturnType;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,9 +36,7 @@ import java.util.Map;
  */
 public class BaseController {
 
-    Logger logger = LoggerFactory.getLogger(BaseController.class);
-
-    public static final String CONTENT_TYPE_FORMED = "application/x-www-form-urlencoded";
+    private Logger logger = LoggerFactory.getLogger(BaseController.class);
 
     // 定义exceptionHandler来解决controller层中未被吸收的exception
     @ExceptionHandler(Exception.class)

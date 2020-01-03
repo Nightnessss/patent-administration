@@ -7,7 +7,6 @@ import com.fehead.error.EmBusinessError;
 import com.fehead.model.Patent;
 import com.fehead.response.CommonReturnType;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +47,11 @@ public class PatentController extends BaseController {
     static final String[] IDENTIFICATION = {"A", "A8", "U", "U8", "U9", "Y1", "Y2", "S",
                                             "S9", "S1", "S2"};
 
+    /**
+     * 获取所有专利信息
+     * @return
+     * @throws BusinessException
+     */
     @GetMapping("/getPatents")
     public CommonReturnType getPatents() throws BusinessException {
 
@@ -57,10 +61,16 @@ public class PatentController extends BaseController {
         } catch (Exception e) {
             throw new BusinessException(EmBusinessError.DATABASE_OPERATION_ERROR);
         }
-        logger.info("RETURN: " + patents);
+        logger.info("RETURN: " + patents.size() + "条数据");
         return CommonReturnType.create(patents);
     }
 
+    /**
+     * 批量删除专利
+     * @param ids
+     * @return
+     * @throws BusinessException
+     */
     @PostMapping("/deletePatents")
     public CommonReturnType deletePatents(@RequestParam("ids") String ids) throws BusinessException {
         List<Integer> idList = JSONObject.parseArray(ids, Integer.class);
@@ -70,9 +80,22 @@ public class PatentController extends BaseController {
         } catch (Exception e) {
             throw new BusinessException(EmBusinessError.DATABASE_OPERATION_ERROR);
         }
+        logger.info("DELETE: " + ids);
         return CommonReturnType.create(null);
     }
 
+
+    /**
+     * 添加专利
+     * @param id
+     * @param code
+     * @param name
+     * @param inventor
+     * @param applicant
+     * @param publication_time
+     * @return
+     * @throws BusinessException
+     */
     @PostMapping("/addPatent")
     public CommonReturnType addPatents(@RequestParam("id") int id,
                                        @RequestParam("code") String code,
@@ -94,9 +117,21 @@ public class PatentController extends BaseController {
         } catch (Exception e) {
             throw new BusinessException(EmBusinessError.DATABASE_OPERATION_ERROR);
         }
+        logger.info("ADD: " + patent.getCode());
         return CommonReturnType.create(null);
     }
 
+    /**
+     * 更新专利
+     * @param id
+     * @param code
+     * @param name
+     * @param inventor
+     * @param applicant
+     * @param publication_time
+     * @return
+     * @throws BusinessException
+     */
     @PostMapping("/updatePatent")
     public CommonReturnType updatePatents(@RequestParam("id") int id,
                                           @RequestParam("code") String code,
@@ -118,25 +153,37 @@ public class PatentController extends BaseController {
         } catch (Exception e) {
             throw new BusinessException(EmBusinessError.DATABASE_OPERATION_ERROR);
         }
+        logger.info("UPDATE: " + patent.getCode());
         return CommonReturnType.create(null);
     }
 
+    /**
+     * 根据公开号查找专利
+     * @param code
+     * @return
+     * @throws BusinessException
+     */
     @GetMapping("/getPatentsByCode")
     public CommonReturnType getPatentsByCode(@RequestParam("code") String code) throws BusinessException {
         List<Patent> patents = new ArrayList<>();
 
         patents = patentDao.getPatentsByCode(code);
+        logger.info("RETURN: " + patents.size() + "条数据");
         return CommonReturnType.create(patents);
 
     }
 
+    /**
+     * 根据名称模糊查询专利
+     * @param name
+     * @return
+     * @throws BusinessException
+     */
     @GetMapping("/getPatentsByName")
     public CommonReturnType getPatentsByName(@RequestParam("name") String name) throws BusinessException {
         List<Patent> patents = new ArrayList<>();
-
         patents = patentDao.getPatentsByName(name);
-
-        logger.info("RETURN: " + new ReflectionToStringBuilder(patents));
+        logger.info("RETURN: " + patents.size() + "条数据");
         return CommonReturnType.create(patents);
 
     }

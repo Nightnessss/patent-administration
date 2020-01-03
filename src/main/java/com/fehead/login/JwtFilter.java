@@ -2,6 +2,7 @@ package com.fehead.login;
 
 
 import com.fehead.error.EmBusinessError;
+import io.jsonwebtoken.Jwts;
 
 import javax.security.auth.login.LoginException;
 import javax.servlet.*;
@@ -55,6 +56,14 @@ public class JwtFilter implements Filter {
                 request.getRequestDispatcher("/login/fail").forward(request, response);
                 return;
             }
+//            else {
+//                String username = Jwts.parser()
+//                        .setSigningKey("LoginUser")
+//                        .parseClaimsJws(authHeader.replace("bearer ", ""))
+//                        .getBody()
+//                        .getSubject();
+//                System.out.println(username);
+//            }
 
 
             chain.doFilter(req, res);

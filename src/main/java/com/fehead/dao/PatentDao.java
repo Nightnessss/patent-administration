@@ -1,12 +1,11 @@
 package com.fehead.dao;
 
-import com.fehead.controller.BaseController;
 import com.fehead.error.BusinessException;
 import com.fehead.error.EmBusinessError;
 import com.fehead.model.Password;
 import com.fehead.model.Patent;
-import com.fehead.response.CommonReturnType;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -35,10 +34,13 @@ import java.util.List;
  */
 public class PatentDao {
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://localhost:3306/javadesign?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC";
+    static final String DB_URL = "jdbc:mysql://localhost:3306/javadesign" +
+            "?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC";
 
     static final String USER = "root";
     static final String PASS = "1948730080";
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private Connection con;
     public PatentDao() {
@@ -181,10 +183,10 @@ public class PatentDao {
             strSQL = strSQL + "," + '\''+ ids.get(i) + '\'';
         }
         strSQL += ')';
-        System.out.println(strSQL);
-
+//        System.out.println(strSQL);
         Statement st = con.createStatement();
         st.execute(strSQL);
+        logger.info("DELETE: " + ids);
         st.close();
         //关闭SQL语句执行对象
         //con.close();
@@ -199,7 +201,8 @@ public class PatentDao {
     public void addPatent(Patent patent) {
 
         try{
-            PreparedStatement ps=con.prepareStatement("INSERT INTO patent(code, name, inventor, applicant, publication_time) VALUES(?,?,?,?,?)");
+            PreparedStatement ps=con.prepareStatement("INSERT INTO " +
+                    "patent(code, name, inventor, applicant, publication_time) VALUES(?,?,?,?,?)");
             //创建SQL语句执行对象
             ps.setString(1,patent.getCode());
             ps.setString(2, patent.getName());
@@ -224,7 +227,8 @@ public class PatentDao {
      */
     public void updatePatent(Patent patent) {
         try{
-            PreparedStatement ps=con.prepareStatement("UPDATE patent SET code=?,name=?,inventor=?,applicant=?, publication_time=? WHERE id=?");
+            PreparedStatement ps=con.prepareStatement("UPDATE patent " +
+                    "SET code=?,name=?,inventor=?,applicant=?, publication_time=? WHERE id=?");
             //创建SQL语句执行对象
             ps.setString(1,patent.getCode());
             ps.setString(2, patent.getName());
@@ -233,6 +237,8 @@ public class PatentDao {
             ps.setDate(5, patent.getPublicationTime());
             ps.setInt(6, patent.getId());
             ps.execute();
+            logger.info("UPDATE: " + patent.getCode());
+
             ps.close();
             //关闭SQL语句执行对象
             //con.close();

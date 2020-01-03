@@ -9,11 +9,14 @@ import com.fehead.utils.AESUtil;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
@@ -41,13 +44,13 @@ import java.util.Date;
 @RestController
 @RequestMapping("/login")
 public class LoginController extends BaseController {
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private PatentDao patentDao = new PatentDao();
 
     @PostMapping("/login")
     public CommonReturnType login(@RequestParam(value = "username", required = true) String username,
-                                  @RequestParam(value = "password", required = true) String password,
-                                  HttpServletRequest request) throws NoSuchAlgorithmException, BusinessException {
+                                  @RequestParam(value = "password", required = true) String password) throws NoSuchAlgorithmException, BusinessException {
 
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "账号或密码不能为空");
@@ -69,6 +72,7 @@ public class LoginController extends BaseController {
                 .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 24 * 1000))
                 .signWith(SignatureAlgorithm.HS512, "LoginUser")
                 .compact();
+        logger.info("LOGIN: " + username);
         return CommonReturnType.create("bearer " + token);
     }
 
