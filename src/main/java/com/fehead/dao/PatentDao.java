@@ -43,10 +43,11 @@ public class PatentDao {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private Connection con;
+
     public PatentDao() {
         try {
             Class.forName(JDBC_DRIVER);
-            con = DriverManager.getConnection(DB_URL,USER,PASS);
+            con = DriverManager.getConnection(DB_URL, USER, PASS);
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
@@ -54,13 +55,14 @@ public class PatentDao {
 
     /**
      * 查询密码
+     *
      * @param username
      * @return
      */
     public Password getPassword(String username) {
         Password pass = null;
-        try{
-            PreparedStatement ps=con.prepareStatement("SELECT * FROM user_password WHERE username=?");
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM user_password WHERE username=?");
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
             rs.next();
@@ -69,33 +71,32 @@ public class PatentDao {
             //关闭SQL语句执行对象
             //con.close();
             //关闭数据库连接对象
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return pass;
     }
 
     /**
      * 根据公开号查询专利
+     *
      * @param code
      * @return
      */
     public List<Patent> getPatentsByCode(String code) throws BusinessException {
         List<Patent> patents = new ArrayList<>();
-        try{
-            PreparedStatement ps=con.prepareStatement("SELECT * FROM patent WHERE code=?");
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM patent WHERE code=?");
             ps.setString(1, code);
-            ResultSet rs=ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
 
             patents = select(rs);
             ps.close();
             //关闭SQL语句执行对象
             //con.close();
             //关闭数据库连接对象
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return patents;
@@ -104,13 +105,14 @@ public class PatentDao {
 
     /**
      * 根据名称来查询专利
+     *
      * @param sname
      * @return
      */
     public List<Patent> getPatentsByName(String sname) throws BusinessException {
         List<Patent> result = new ArrayList<Patent>();
-        try{
-            String strSQL = "SELECT * FROM patent WHERE name LIKE '%"+sname+"%'";
+        try {
+            String strSQL = "SELECT * FROM patent WHERE name LIKE '%" + sname + "%'";
             Statement st = con.createStatement();
             ResultSet rs = st.executeQuery(strSQL);
             result = select(rs);
@@ -118,17 +120,17 @@ public class PatentDao {
             //关闭SQL语句执行对象
             //con.close();
             //关闭数据库连接对象
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
 
         return result;
     }
+
     public List<Patent> getPatents() {
         List<Patent> result = new ArrayList<Patent>();
-        try{
+        try {
             String strSQL = "SELECT * FROM patent";
             Statement st = con.createStatement();
             ResultSet rs = st.executeQuery(strSQL);
@@ -137,8 +139,7 @@ public class PatentDao {
             //关闭SQL语句执行对象
             //con.close();
             //关闭数据库连接对象
-        }
-        catch (SQLException | BusinessException e) {
+        } catch (SQLException | BusinessException e) {
             e.printStackTrace();
         }
         return result;
@@ -147,6 +148,7 @@ public class PatentDao {
 
     /**
      * 查找通用
+     *
      * @param rs
      * @return
      * @throws SQLException
@@ -155,7 +157,7 @@ public class PatentDao {
 
         List<Patent> result = new ArrayList<Patent>();
 
-        while(rs.next()) {
+        while (rs.next()) {
             int id = rs.getInt(1);
             String code = rs.getString(2);
             String name = rs.getString(3);
@@ -174,13 +176,14 @@ public class PatentDao {
 
     /**
      * 批量删除
+     *
      * @param ids
      */
     public void deletePatents(List<Integer> ids) throws SQLException {
         String strSQL = "DELETE FROM patent WHERE id IN (";
         strSQL = strSQL + '\'' + ids.get(0) + '\'';
-        for(int i = 1;i < ids.size(); i++) {
-            strSQL = strSQL + "," + '\''+ ids.get(i) + '\'';
+        for (int i = 1; i < ids.size(); i++) {
+            strSQL = strSQL + "," + '\'' + ids.get(i) + '\'';
         }
         strSQL += ')';
 //        System.out.println(strSQL);
@@ -196,44 +199,46 @@ public class PatentDao {
 
     /**
      * 添加数据
+     *
      * @param patent
      */
-    public void addPatent(Patent patent) {
+    public void addPatent(Patent patent) throws SQLException {
 
-        try{
-            PreparedStatement ps=con.prepareStatement("INSERT INTO " +
-                    "patent(code, name, inventor, applicant, publication_time) VALUES(?,?,?,?,?)");
-            //创建SQL语句执行对象
-            ps.setString(1,patent.getCode());
-            ps.setString(2, patent.getName());
-            ps.setString(3,patent.getInventor());
-            ps.setString(4,patent.getApplicant());
-            ps.setDate(5, patent.getPublicationTime());
-            ps.execute();
-            ps.close();
-            //关闭SQL语句执行对象
-            //con.close();
-            //关闭数据库连接对象
-        }
-        catch (SQLException e) {//捕捉处理数据连接或者操作异常
-            e.printStackTrace();
-        }
+//        try{
+        PreparedStatement ps = con.prepareStatement("INSERT INTO " +
+                "patent(code, name, inventor, applicant, publication_time) VALUES(?,?,?,?,?)");
+        //创建SQL语句执行对象
+        ps.setString(1, patent.getCode());
+        ps.setString(2, patent.getName());
+        ps.setString(3, patent.getInventor());
+        ps.setString(4, patent.getApplicant());
+        ps.setDate(5, patent.getPublicationTime());
+        ps.execute();
+        ps.close();
+        //关闭SQL语句执行对象
+        //con.close();
+        //关闭数据库连接对象
+//        }
+//        catch (SQLException e) {//捕捉处理数据连接或者操作异常
+//            e.printStackTrace();
+//        }
     }
 
 
     /**
      * 更新
+     *
      * @param patent
      */
     public void updatePatent(Patent patent) {
-        try{
-            PreparedStatement ps=con.prepareStatement("UPDATE patent " +
+        try {
+            PreparedStatement ps = con.prepareStatement("UPDATE patent " +
                     "SET code=?,name=?,inventor=?,applicant=?, publication_time=? WHERE id=?");
             //创建SQL语句执行对象
-            ps.setString(1,patent.getCode());
+            ps.setString(1, patent.getCode());
             ps.setString(2, patent.getName());
-            ps.setString(3,patent.getInventor());
-            ps.setString(4,patent.getApplicant());
+            ps.setString(3, patent.getInventor());
+            ps.setString(4, patent.getApplicant());
             ps.setDate(5, patent.getPublicationTime());
             ps.setInt(6, patent.getId());
             ps.execute();
@@ -243,8 +248,7 @@ public class PatentDao {
             //关闭SQL语句执行对象
             //con.close();
             //关闭数据库连接对象
-        }
-        catch (SQLException e) {//捕捉处理数据连接或者操作异常
+        } catch (SQLException e) {//捕捉处理数据连接或者操作异常
             e.printStackTrace();
         }
     }

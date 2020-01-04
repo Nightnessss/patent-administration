@@ -50,7 +50,7 @@ public class AppTest
     }
 
     @Test
-    public void whenAddSuccess() throws BusinessException {
+    public void whenAddSuccess() throws BusinessException, SQLException {
         PatentDao patentDao  = new PatentDao();
         Patent patent = new Patent(16, "CN209806514U", "园林绿化用多功能修剪装置", "何君洁;贲宗友;梁梦婷;贾荣;王科鑫",
                 "滁州学院", new Date(1576771200));
